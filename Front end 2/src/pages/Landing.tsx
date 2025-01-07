@@ -12,7 +12,7 @@ export function Landing() {
       <nav className="absolute right-4 top-4">
         <button
           onClick={toggleTheme}
-          className="rounded-full p-2 text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
+          className="rounded-full p-2 text-gray-600 hover:bg-gray-200 dark:text-white dark:hover:bg-gray-700"
         >
           {theme === 'dark' ? (
             <Sun className="h-6 w-6" />

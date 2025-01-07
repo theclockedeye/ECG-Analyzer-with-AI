@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogIn } from 'lucide-react';
 import { AuthPanel } from '../components/auth/AuthPanel';
-import { SocialLogin } from '../components/auth/SocialLogin';
 import { PasswordInput } from '../components/auth/PasswordInput';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
@@ -57,22 +56,9 @@ export function Login() {
           className="w-full max-w-md space-y-8"
         >
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
               Sign in to your account
             </h2>
-          </div>
-
-          <SocialLogin />
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-700" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500 dark:bg-gray-900 dark:text-gray-400">
-                Or continue with
-              </span>
-            </div>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -85,7 +71,7 @@ export function Login() {
             />
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <PasswordInput
@@ -104,7 +90,7 @@ export function Login() {
                 />
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900 dark:text-gray-300"
+                  className="ml-2 block text-sm text-gray-900"
                 >
                   Remember me
                 </label>
@@ -112,7 +98,7 @@ export function Login() {
 
               <a
                 href="#"
-                className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                className="text-sm font-medium text-blue-600 hover:text-blue-500"
               >
                 Forgot password?
               </a>
@@ -130,11 +116,11 @@ export function Login() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-center text-sm text-gray-600">
             Don't have an account?{' '}
             <Link
               to="/signup"
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              className="font-medium text-blue-600 hover:text-blue-500"
             >
               Sign up
             </Link>

@@ -9,7 +9,7 @@ export function ThemeToggle() {
     <motion.button
       whileTap={{ scale: 0.95 }}
       onClick={toggleTheme}
-      className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+      className="rounded-full p-2 text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800"
     >
       {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
     </motion.button>
