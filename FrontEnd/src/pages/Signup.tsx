@@ -7,6 +7,11 @@ import { PasswordInput } from '../components/auth/PasswordInput';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { CircularSpinner } from '../components/ui/CircularSpinner';
+import { auth, db } from './firebase.js';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { setDoc, doc } from 'firebase/firestore';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function Signup() {
   const [name, setName] = useState('');
@@ -44,9 +49,49 @@ export function Signup() {
     if (!validateForm()) return;
 
     setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
+
+    try {
+      // Create user with Firebase
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+      console.log('User created:', user);
+
+      if (user) {
+        await setDoc(doc(db, 'Users', user.uid), {
+          email: user.email,
+          name: name,
+        });
+      }
+
+      // Update the user's display name
+      await updateProfile(user, { displayName: name });
+
+      // Show success toast
+      toast.success('Account created successfully!');
+      toast.info('Use Signin to enter the analyzer');
+
+    } catch (error: any) {
+      console.error('Error during signup:', error.message);
+
+      // Handle Firebase-specific errors and show error toast
+      if (error.code === 'auth/email-already-in-use') {
+        setErrors({ email: 'Email is already in use' });
+        toast.error('Email is already in use');
+      } else if (error.code === 'auth/weak-password') {
+        setErrors({ password: 'Password is too weak' });
+        toast.error('Password is too weak');
+      } else {
+        setErrors({ general: 'Failed to create account. Please try again.' });
+        toast.error('Failed to create account. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -96,6 +141,10 @@ export function Signup() {
               />
             </div>
 
+            {errors.general && (
+              <p className="text-sm text-red-600">{errors.general}</p>
+            )}
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <CircularSpinner />
@@ -119,6 +168,9 @@ export function Signup() {
           </p>
         </motion.div>
       </div>
+
+      {/* ToastContainer for displaying toasts */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 }

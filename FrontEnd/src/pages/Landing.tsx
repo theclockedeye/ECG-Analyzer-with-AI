@@ -90,15 +90,16 @@ export function Landing() {
               <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </Button>
-            <Button
+          <Button
               onClick={handleLearnMore}
               variant="outline"
               size="lg"
-              className={`text-lg px-8 py-4 ${
-                theme === 'dark'
-                  ? 'text-white hover:text-black border-white'
-                  : 'text-blue-600 hover:text-blue-700'
-              }`} >
+              className={`text-lg px-8 py-4 backdrop-blur-sm ${
+                theme === 'dark' 
+                  ? 'text-white hover:text-blue-400 border-white/20 hover:border-white/40 bg-white/5' 
+                  : 'text-blue-600 hover:text-blue-700 border-blue-200 hover:border-blue-300 bg-white/50'
+              }`}
+            >
               Learn More
             </Button>
           </motion.div>

@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Sidebar } from '../../components/layout/Sidebar';
 import { TopBar } from '../../components/layout/TopBar';
 
@@ -7,9 +8,16 @@ export function DashboardLayout() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <TopBar />
-      <main className="ml-[240px] p-4 pt-20">
-        <Outlet />
-      </main>
+      <motion.main
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="ml-[280px] p-8 pt-24"
+      >
+        <div className="mx-auto max-w-7xl">
+          <Outlet />
+        </div>
+      </motion.main>
     </div>
   );
 }
