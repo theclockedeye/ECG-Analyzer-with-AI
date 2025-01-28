@@ -1,14 +1,17 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, FileText, User, LogOut } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Upload, FileText, User, LogOut } from "lucide-react";
+import { Button } from "../components/ui/Button";
 
 export function Dashboard() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
+    if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
+      console.log("File selected:", e.target.files[0].name);
+    } else {
+      console.error("No file selected.");
     }
   };
 
@@ -47,24 +50,39 @@ export function Dashboard() {
               Upload ECG File
             </h2>
             <div className="flex flex-col items-center space-y-4">
-              <label className="flex w-full cursor-pointer flex-col items-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 dark:border-gray-600 dark:bg-gray-700">
+              <label
+                htmlFor="file-upload"
+                className="flex w-full cursor-pointer flex-col items-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600"
+              >
                 <Upload className="mb-2 h-8 w-8 text-gray-500 dark:text-gray-400" />
                 <span className="text-sm text-gray-500 dark:text-gray-400">
                   Click to upload or drag and drop
                 </span>
-                <input
-                  type="file"
-                  className="hidden"
-                  accept=".ecg,.txt"
-                  onChange={handleFileUpload}
-                />
               </label>
+              <input
+                id="file-upload"
+                type="file"
+                className="hidden"
+                accept=".ecg,.txt"
+                onChange={handleFileUpload}
+              />
+
               {selectedFile && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Selected file: {selectedFile.name}
                 </p>
               )}
-              <Button className="w-full">
+
+              <Button
+                className="w-full"
+                onClick={() => {
+                  if (selectedFile) {
+                    console.log("Processing file:", selectedFile.name);
+                  } else {
+                    alert("Please select a file first.");
+                  }
+                }}
+              >
                 <FileText className="mr-2 h-4 w-4" />
                 Analyze ECG
               </Button>

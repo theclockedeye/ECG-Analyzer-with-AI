@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, Image as ImageIcon, Eye, Trash } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -14,6 +14,7 @@ export function DropZone() {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -29,42 +30,60 @@ export function DropZone() {
     if (file.size > MAX_FILE_SIZE) {
       return 'File size exceeds 10MB limit';
     }
-    
+
     const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
     if (!ACCEPTED_FILE_TYPES.includes(fileExtension)) {
       return 'Invalid file type';
     }
-    
+
     return null;
   };
 
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
+  const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    
+
     const newFiles = Array.from(e.dataTransfer.files);
-    
-    for (const file of newFiles) {
+
+    newFiles.forEach((file) => {
       const error = validateFile(file);
       if (error) {
         alert(error);
         return;
       }
-      
+
       if (file.type.startsWith('image/')) {
         const preview = URL.createObjectURL(file);
-        setFiles(prev => [...prev, Object.assign(file, { preview })]);
+        setFiles((prev) => [...prev, Object.assign(file, { preview })]);
       } else {
-        setFiles(prev => [...prev, file]);
+        setFiles((prev) => [...prev, file]);
       }
-    }
+    });
+  }, []);
+
+  const handleBrowseFiles = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    selectedFiles.forEach((file) => {
+      const error = validateFile(file);
+      if (error) {
+        alert(error);
+        return;
+      }
+
+      if (file.type.startsWith('image/')) {
+        const preview = URL.createObjectURL(file);
+        setFiles((prev) => [...prev, Object.assign(file, { preview })]);
+      } else {
+        setFiles((prev) => [...prev, file]);
+      }
+    });
   }, []);
 
   const handleUpload = useCallback(() => {
     setUploadProgress(0);
     const interval = setInterval(() => {
-      setUploadProgress(prev => {
+      setUploadProgress((prev) => {
         if (prev === null || prev >= 100) {
           clearInterval(interval);
           return null;
@@ -81,6 +100,7 @@ export function DropZone() {
         animate={{ opacity: 1, y: 0 }}
         className="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800"
       >
+        {/* Drop Zone */}
         <div
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -95,8 +115,11 @@ export function DropZone() {
           <div className="flex flex-col items-center">
             <Upload className="mb-4 h-12 w-12 text-gray-400" />
             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-              Drag and drop your ECG files here, or
-              <button className="mx-1 text-blue-600 hover:text-blue-500">
+              Drag and drop your files here, or
+              <button
+                className="mx-1 text-blue-600 hover:text-blue-500"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 browse
               </button>
               to select
@@ -107,6 +130,17 @@ export function DropZone() {
           </div>
         </div>
 
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          multiple
+          accept={ACCEPTED_FILE_TYPES.join(',')}
+          className="hidden"
+          onChange={handleBrowseFiles}
+        />
+
+        {/* Files List */}
         <AnimatePresence>
           {files.length > 0 && (
             <motion.div
@@ -130,9 +164,7 @@ export function DropZone() {
                       <FileText className="h-8 w-8 text-blue-500" />
                     )}
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {file.name}
-                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">{file.name}</p>
                       <p className="text-sm text-gray-500">
                         {(file.size / 1024 / 1024).toFixed(2)} MB
                       </p>
@@ -182,7 +214,7 @@ export function DropZone() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    files.forEach(file => {
+                    files.forEach((file) => {
                       if (file.preview) {
                         URL.revokeObjectURL(file.preview);
                       }
